@@ -24,15 +24,7 @@ The Advanced RAG Pipeline is a sophisticated Retrieval-Augmented Generation syst
 
 ## Architecture
 
-```mermaid
-graph TD
-    A[Query] --> B[Retriever]
-    B --> C[(Qdrant)]
-    C --> D[Top K Chunks]
-    D --> E[Prompt Builder]
-    E --> F[OpenAI LLM]
-    F --> G[Structured Response + Citations]
-```
+**Query** ➔ **Retriever** ➔ **Qdrant (Vector DB)** ➔ **Top K Chunks** ➔ **Prompt Builder** ➔ **OpenAI LLM** ➔ **Structured Response + Citations**
 
 ## How it Works
 
