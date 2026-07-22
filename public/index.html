@@ -5,31 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced RAG</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        // Inline script to prevent theme flash
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark-theme');
+            document.body.classList.add('dark-theme');
+        }
+    </script>
 </head>
 <body>
-    <main class="container">
-        <header class="app-header">
-            <div>
+    <header class="app-header">
+        <div class="logo-area">
+            <img src="assets/chai-logo-placeholder.svg" alt="Chai Logo" class="logo-icon">
+            <div class="logo-text">
                 <h1>Advanced RAG</h1>
-                <p>Ask a question based on the course materials.</p>
+                <p>Knowledge Base Search</p>
             </div>
+        </div>
+        <div class="header-actions">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
             <div id="user-button"></div>
-        </header>
+        </div>
+    </header>
 
-        <section id="auth-section" class="auth-section">
-            <div id="auth-container"></div>
-        </section>
+    <section id="auth-section" class="auth-section">
+        <div id="auth-container"></div>
+    </section>
 
-        <section id="chat-section" class="chat-section" style="display: none;">
-            <div id="results-container" class="results-container">
-                <div class="placeholder-text">Your answer will appear here...</div>
+    <main id="main-content" style="display: none;">
+        <!-- Search Area -->
+        <div class="search-container" id="search-container">
+            <form id="ask-form" class="ask-form">
+                <div class="input-wrapper">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="question-input" placeholder="Ask anything about the course..." autocomplete="off">
+                </div>
+            </form>
+            <div id="recent-questions" class="recent-questions"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+            <img src="assets/tea-cup-placeholder.svg" alt="Tea Cup" class="empty-icon">
+            <h2>Welcome to your course assistant.</h2>
+            <p>This is a Retrieval-Augmented Generation (RAG) system.<br>It searches the exact course materials to answer your questions.</p>
+            <div class="example-grid">
+                <button class="example-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    What is Expo Router?
+                </button>
+                <button class="example-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    Explain Secure Store.
+                </button>
+                <button class="example-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    Difference between Core and Native Components.
+                </button>
+                <button class="example-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    What is Async Storage?
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="results-area" class="results-area" style="display: none;">
+            
+            <!-- Left Panel: Answer -->
+            <div class="answer-panel">
+                <div id="source-chips" class="source-chips"></div>
+                
+                <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                    <!-- SVG Data Flow Loader Container -->
+                    <div id="svg-flow-container" class="svg-pipeline-container"></div>
+                    
+                    <!-- Skeleton Answer Card -->
+                    <div class="skeleton-card">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text medium"></div>
+                        <br>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                </div>
+                
+                <div id="classification-badge" class="classification-badge" style="display: none;"></div>
+                <div id="answer-content" class="answer-content" style="display: none;"></div>
+                
+                <div id="stats-bar" class="stats-bar" style="display: none;">
+                    <div class="stat"><span class="stat-value" id="stat-chunks" data-target="0">0</span> <span class="stat-label">Chunks</span></div>
+                    <div class="stat"><span class="stat-value" id="stat-lessons" data-target="0">0</span> <span class="stat-label">Lessons</span></div>
+                    <div class="stat"><span class="stat-value" id="stat-time">0ms</span> <span class="stat-label">Latency</span></div>
+                    <div class="stat"><span class="stat-badge" id="stat-confidence">---</span></div>
+                </div>
             </div>
 
-            <form id="ask-form" class="ask-form">
-                <input type="text" id="question-input" placeholder="What is mobile development?" required autocomplete="off">
-                <button type="submit" id="submit-btn">Ask</button>
-            </form>
-        </section>
+            <!-- Right Panel: Knowledge Trail -->
+            <div class="knowledge-trail-panel">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <img src="assets/knowledge-placeholder.svg" style="width: 20px; height: 20px; color: var(--accent-orange);">
+                    <h3 style="margin: 0; letter-spacing: -0.01em;">Knowledge Trail</h3>
+                </div>
+                <p class="panel-subtitle">Chronological source attribution for this answer.</p>
+                <div id="knowledge-trail-content" class="knowledge-trail-content"></div>
+            </div>
+        </div>
     </main>
 
     <!-- Initialize Clerk SDK -->
@@ -41,6 +139,6 @@
       type="text/javascript"
     ></script>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -37,7 +37,13 @@ export async function askQuestion(question) {
   return {
     answer: response.content,
     lesson: Array.from(lessonNames).join(", "),
-    timestamps: Array.from(timestamps)
+    timestamps: Array.from(timestamps),
+    chunks: docs.map(doc => ({
+      lesson: doc.metadata.lesson || "Unknown",
+      start: doc.metadata.start || "Unknown",
+      end: doc.metadata.end || "Unknown",
+      text: doc.pageContent || ""
+    }))
   };
 }
 
