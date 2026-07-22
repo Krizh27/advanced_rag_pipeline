@@ -93,17 +93,23 @@ export class UI {
     }
 
     handleSuccess(question, data, responseTimeMs) {
+        // Format timestamps in text to YouTube style with chips
+        let formattedAnswer = data.answer.replace(/(\d{2}):(\d{2}):(\d{2}),\d{3}/g, (match, h, m, s) => {
+            let time = h === "00" ? `${parseInt(m, 10)}:${s}` : `${parseInt(h, 10)}:${m}:${s}`;
+            return `<span class="timestamp-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px; margin-top: -2px;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${time}</span>`;
+        });
+
         // Parse Answer
         this.elements.answerContent.innerHTML = "";
-        const sections = this.parseLLMResponse(data.answer);
+        const sections = this.parseLLMResponse(formattedAnswer);
         if (sections.length === 0) {
-            this.elements.answerContent.innerHTML = `<p>${data.answer}</p>`;
+            this.elements.answerContent.innerHTML = `<p>${formattedAnswer}</p>`;
         } else {
             sections.forEach(sec => {
                 const div = document.createElement("div");
                 div.className = "answer-section";
                 if (sec.header) div.innerHTML += `<h3>${sec.header}</h3>`;
-                let contentHTML = sec.content.replace(/```([\\s\\S]*?)```/g, "<code>$1</code>");
+                let contentHTML = sec.content.replace(/```([\s\S]*?)```/g, "<code>$1</code>");
                 div.innerHTML += `<p>${contentHTML}</p>`;
                 this.elements.answerContent.appendChild(div);
             });

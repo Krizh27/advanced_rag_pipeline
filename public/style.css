@@ -652,6 +652,21 @@ body {
   -webkit-line-clamp: unset;
 }
 
+.timestamp-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--neutral-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  margin: 0 0.2rem;
+  white-space: nowrap;
+}
+
 /* Skeleton Loading State */
 .skeleton {
   background: linear-gradient(90deg, var(--neutral-bg) 25%, var(--border-color) 50%, var(--neutral-bg) 75%);

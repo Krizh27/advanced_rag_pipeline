@@ -11,19 +11,21 @@ export class Timeline {
         this.clear();
         let delay = 0;
 
-        if (chunks.length > 0) {
+        if (chunks && chunks.length > 0) {
             chunks.forEach((chunk) => {
                 const title = this.formatLessonName(chunk.lesson);
-                const meta = `${chunk.start} - ${chunk.end}`;
+                
+                // Format timestamp from 00:03:09,181 to 3:09
+                let meta = `${chunk.start} - ${chunk.end}`;
+                meta = meta.replace(/(\d{2}):(\d{2}):(\d{2}),\d{3}/g, (match, h, m, s) => {
+                    return h === "00" ? `${parseInt(m, 10)}:${s}` : `${parseInt(h, 10)}:${m}:${s}`;
+                });
+
                 this.appendRichTrailNode(title, meta, chunk.text, delay);
                 delay += 100;
             });
-        } else if (fallbackLessons.length > 0) {
-            fallbackLessons.forEach((lesson, index) => {
-                const ts = fallbackTimestamps[index] || "Various timestamps";
-                this.appendRichTrailNode(this.formatLessonName(lesson), ts, "No chunk text available.", delay);
-                delay += 100;
-            });
+        } else {
+            this.container.innerHTML = `<div style="padding: 2rem 1rem; color: var(--text-secondary); text-align: center;">No relevant chunks found.</div>`;
         }
     }
 
