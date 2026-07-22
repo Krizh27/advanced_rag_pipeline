@@ -8,12 +8,19 @@
 </head>
 <body>
     <main class="container">
-        <header>
-            <h1>Advanced RAG</h1>
-            <p>Ask a question based on the course materials.</p>
+        <header class="app-header">
+            <div>
+                <h1>Advanced RAG</h1>
+                <p>Ask a question based on the course materials.</p>
+            </div>
+            <div id="user-button"></div>
         </header>
 
-        <section class="chat-section">
+        <section id="auth-section" class="auth-section">
+            <div id="auth-container"></div>
+        </section>
+
+        <section id="chat-section" class="chat-section" style="display: none;">
             <div id="results-container" class="results-container">
                 <div class="placeholder-text">Your answer will appear here...</div>
             </div>
@@ -24,6 +31,16 @@
             </form>
         </section>
     </main>
+
+    <!-- Initialize Clerk SDK -->
+    <script
+      async
+      crossorigin="anonymous"
+      data-clerk-publishable-key="pk_test_ZmFjdHVhbC1kaW5nby03Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+      src="https://factual-dingo-72.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+      type="text/javascript"
+    ></script>
+
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,4 +1,22 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", async () => {
+    // Initialize Clerk and Auth UI
+    await window.Clerk.load();
+
+    const authSection = document.getElementById("auth-section");
+    const chatSection = document.getElementById("chat-section");
+
+    if (window.Clerk.user) {
+        authSection.style.display = "none";
+        chatSection.style.display = "flex";
+        window.Clerk.mountUserButton(document.getElementById("user-button"));
+    } else {
+        authSection.style.display = "flex";
+        chatSection.style.display = "none";
+        window.Clerk.mountSignIn(document.getElementById("auth-container"));
+        // Stop execution if not logged in
+        return;
+    }
+
     const form = document.getElementById("ask-form");
     const input = document.getElementById("question-input");
     const resultsContainer = document.getElementById("results-container");
@@ -22,9 +40,14 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.disabled = true;
 
         try {
+            const token = await window.Clerk.session?.getToken();
+            
             const response = await fetch("/ask", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ question })
             });
 
