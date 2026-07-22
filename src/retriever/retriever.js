@@ -27,6 +27,3 @@ export async function retrieveDocuments(query) {
   }
 }
 
-// Temporary test
-const docs = await retrieveDocuments("What is mobile development?");
-console.log(docs);
