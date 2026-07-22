@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced RAG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Advanced RAG</h1>
+            <p>Ask a question based on the course materials.</p>
+        </header>
+
+        <section class="chat-section">
+            <div id="results-container" class="results-container">
+                <div class="placeholder-text">Your answer will appear here...</div>
+            </div>
+
+            <form id="ask-form" class="ask-form">
+                <input type="text" id="question-input" placeholder="What is mobile development?" required autocomplete="off">
+                <button type="submit" id="submit-btn">Ask</button>
+            </form>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
